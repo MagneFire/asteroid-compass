@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 - Florent Revest  <revestflo@gmail.com>
+ * Copyright (C) 2022 - Darrel Griët    <dgriet@gmail.com>
+ *               2017 - Florent Revest  <revestflo@gmail.com>
  *                    - Niels Tholenaar <info@123quality.nl>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +20,7 @@
 import QtQuick 2.5
 import org.asteroid.controls 1.0
 import QtSensors 5.3
+import QtGraphicalEffects 1.15
 
 Application {
     id: app
@@ -28,6 +30,7 @@ Application {
 
     property int rotation: 0;
     property int calibration: 0;
+    property int ringValueOffset: Math.sqrt(Math.pow(Dims.l(40), 2) / 2);
 
     Compass {
         active: true
@@ -37,22 +40,172 @@ Application {
         }
     }
 
-    Image {
-        anchors.fill: parent
-        anchors.margins: Dims.l(15)
-        fillMode: Image.PreserveAspectFit
-        source: "qrc:///compass.svg"
-        rotation: -app.rotation
-        height: 200;
-        sourceSize.width: width
-        sourceSize.height: height
+    StatusPage {
+        //% "<h3>No data</h3>Calibrate the sensor by moving it in an ∞ figure."
+        //text: qsTrId("id-no-data-calibrate")
+        text: "<h3>No data</h3>Calibrate the sensor by moving it in an ∞ figure."
+        icon: "ios-infinite-outline"
+        visible: !app.calibration
     }
 
-    Label {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: Dims.l(7)
-        font.pixelSize: Dims.l(5)
-        text: app.rotation + " °N Calibrated: " + app.calibration
+    Item {
+        visible: app.calibration
+        anchors.fill: parent
+
+        Item {
+            id: centerDisplay
+            anchors.fill: parent
+            Label {
+                anchors.centerIn: parent
+                text: app.rotation + "°"
+                font {
+                    pixelSize: parent.height / 4
+                    capitalization: Font.Capitalize
+                    styleName: "SemiCondensed"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Image {
+                anchors.top: parent.top
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: -Dims.l(35)
+                width: Dims.l(10)
+                height: width
+                source: "compass.svg"
+            }
+        }
+
+        Item {
+            id: outerRing
+            anchors.fill: parent
+            rotation: -app.rotation
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: -Dims.l(40)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "N"
+                color: "#c2620c"
+                font {
+                    pixelSize: Dims.l(10)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.horizontalCenterOffset: Dims.l(40)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "E"
+                font {
+                    pixelSize: Dims.l(10)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: Dims.l(40)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "S"
+                font {
+                    pixelSize: Dims.l(10)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.horizontalCenterOffset: -Dims.l(40)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "W"
+                font {
+                    pixelSize: Dims.l(10)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: -ringValueOffset
+                anchors.horizontalCenterOffset: ringValueOffset
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "NE"
+                font {
+                    pixelSize: Dims.l(8)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: ringValueOffset
+                anchors.horizontalCenterOffset: ringValueOffset
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "SE"
+                font {
+                    pixelSize: Dims.l(8)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: ringValueOffset
+                anchors.horizontalCenterOffset: -ringValueOffset
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "SW"
+                font {
+                    pixelSize: Dims.l(8)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+            Label {
+                rotation: app.rotation
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: -ringValueOffset
+                anchors.horizontalCenterOffset: -ringValueOffset
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "NW"
+                font {
+                    pixelSize: Dims.l(8)
+                    capitalization: Font.Capitalize
+                    styleName: "Condensed Bold"
+                    kerning: true
+                    preferShaping: true
+                }
+            }
+        }
     }
 }
